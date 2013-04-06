@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Require JS Example Page</title>
+    <script type="text/javascript" src="libs/jquery-1.9.1.js" data-main="app/main"></script>
+    <script type="text/javascript" src="libs/underscore.js" data-main="app/main"></script>
+    <script type="text/javascript" src="libs/backbone.js" data-main="app/main"></script>
+    <script type="text/javascript" src="src/datatable.js" data-main="app/main"></script>
+    <style type="text/css">
+
+        table
+        {
+            border-collapse:collapse;
+        }
+
+        td,th {
+            border: 1px solid #ccc;
+            padding: 5px;
+
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+
+
+<script type="text/javascript">
+    var coll = new BaseCollection([
+        {name: 'one', id: 1, test:'test'},
+        {name: 'two', id: 2, test:'test'},
+        {name: 'three', id: 3, test:'test'},
+        {name: 'four', id: 4, test:'test'}
+    ])
+    var view = new TableView({collection: coll, config: {columns: [
+        {key: 'id'},
+        {key: 'test'},
+        {key: 'name', formatter: function (key, model) {
+            return model.get(key) + '------name'
+        },label:'NAME'}
+    ]}})
+    view.render().$el.appendTo('#container');
+
+    coll.add({name:'five', id:5});
+</script>
+
+</body>
+</html>
