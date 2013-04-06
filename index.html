@@ -53,7 +53,6 @@
     view.render().$el.appendTo('#container');
 
     view.on('rowClick',function(tr,model){
-        console.log(arguments);
         view.renderDetailView(tr,model);
     });
     view.on('anchorClick:name',console.log);
