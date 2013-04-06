@@ -10,6 +10,7 @@
         table
         {
             border-collapse:collapse;
+            text-align: left;
         }
 
         td,th {
@@ -43,7 +44,12 @@
     ]}})
     view.render().$el.appendTo('#container');
 
+    view.on('cellClick',console.log);
+
     coll.add({name:'five', id:5});
+
+
+
 </script>
 
 </body>

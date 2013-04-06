@@ -86,7 +86,8 @@ var CellView = BaseView.extend({
         if(column.attributes){
             this.$el.attr(column.attributes);
         }
-
+        this.$el.data('__cellModel__', this.model);
+        this.$el.data('__columnConfig__', column);
     },
     render: function () {
         this.$el.html(this.formatter.call(this, this.key, this.model));
@@ -106,9 +107,13 @@ var RowView = BaseView.extend({
     initialize: function (options) {
         this.columns = options.columns;
     },
+    dataEvents:{
+        'change':'render'
+    },
     tagName: 'tr',
     render: function () {
         var _this = this;
+        this.$el.empty();
         _.each(this.columns, function (column) {
             _this.$el.append(new CellView({model: _this.model,column:column}).render().el);
         });
@@ -134,6 +139,9 @@ var TableView = BaseView.extend({
     dataEvents:{
         'add':'addRowHandler',
         'remove':'removeRowHandler'
+    },
+    events:{
+        'click td':'tdClickHandler'
     },
     initialize: function (options) {
         var config = options.config;
@@ -173,6 +181,12 @@ var TableView = BaseView.extend({
     },
     removeRowHandler:function(){
         console.log('remove row', arguments);
+    },
+    tdClickHandler:function(e){
+        var target = $(e.currentTarget);
+        var model = target.data('__cellModel__');
+        var column = target.data('__columnConfig__');
+        this.trigger('cellClick', target, column.key, model);
     }
 });
 
