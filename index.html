@@ -37,12 +37,12 @@
 
 
 <script type="text/javascript">
-    var coll = new BaseCollection([
+    var coll = new RowCollection([
         {name: 'one', id: 1, test:'test'},
         {name: 'two', id: 2, test:'test'},
         {name: 'three', id: 3, test:'test'},
         {name: 'four', id: 4, test:'test'}
-    ])
+    ], {sortKey:'name'})
     var view = new TableView({collection: coll, config: {columns: [
         {key: 'id'},
         {key: 'test'},
@@ -55,15 +55,16 @@
     view.on('rowClick',function(tr,model){
         view.renderDetailView(tr,model);
     });
-    view.on('anchorClick:name',console.log);
+    //view.on('anchorClick:name',console.log);
 
-    coll.on('all',console.log);
+    //view.on('all',console.log);
 
     coll.add({name:'five', id:5});
     coll.add({name:'six', id:6});
     coll.add({name:'seven', id:7});
     coll.add({name:'eight', id:8});
     coll.add({name:'nine', id:9});
+    coll.add({name:'ten', id:10});
 
 
 

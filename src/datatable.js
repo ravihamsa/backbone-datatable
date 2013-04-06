@@ -67,11 +67,35 @@ var BaseModel = Backbone.Model.extend({
 });
 
 var BaseCollection = Backbone.Collection.extend({
-    comparator: function (item) {
-        return item.get('name');
-    }
+
 });
 
+
+var RowCollection = BaseCollection.extend({
+    initialize:function(data, options){
+        this.sortKey = options.sortKey || _.keys(data[0])[0];
+        this.sortOrder = options.sortOrder === 'asc' ? 'desc' : 'asc';
+    },
+    comparator: function (itemA, itemB) {
+        var valueA = itemA.get(this.sortKey) || "0";
+        var valueB = itemB.get(this.sortKey) || "0";
+        if(this.sortOrder === 'asc'){
+            return valueA > valueB;
+        }else{
+            return valueA < valueB;
+        }
+
+    },
+    setSortKey:function(key){
+        if(key === this.sortKey){
+            this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+        }else{
+            this.sortKey = key;
+            this.sortOrder = 'asc';
+        }
+        this.sort();
+    }
+});
 
 var defaultFormatter = function (key, model) {
     return model.get(key);
@@ -170,6 +194,7 @@ var TableView = BaseView.extend({
     },
     events: {
         'click td': 'tdClickHandler',
+        'click th': 'thClickHandler',
         'click td a': 'tdAnchorClickHandler',
         'mouseenter tr.row': 'trHoverOnHandler',
         'mouseleave tr.row': 'trHoverOffHandler'
@@ -269,6 +294,18 @@ var TableView = BaseView.extend({
             var eventName = 'anchorClick';
             this.trigger(eventName + ':' + column.key, target, model);
             this.trigger(eventName + '', target, column.key, model);
+        }
+    },
+    thClickHandler:function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var target = $(e.currentTarget);
+        var column = target.data('__columnConfig__');
+        if (column) {
+            var eventName = 'headerCellClick';
+            this.trigger(eventName + ':' + column.key, target, column);
+            this.trigger(eventName + '', target, column.key, column);
+            this.collection.setSortKey(column.key);
         }
     },
     trHoverOnHandler: function (e) {
