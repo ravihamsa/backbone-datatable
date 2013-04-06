@@ -26,6 +26,10 @@
         .hover {
             background-color: azure;
         }
+
+        th {
+            background-color: cornsilk;
+        }
     </style>
 </head>
 <body>
@@ -43,12 +47,16 @@
         {key: 'id'},
         {key: 'test'},
         {key: 'name', formatter: function (key, model) {
-            return model.get(key) + '------name'
+            return '<a href="">'+model.get(key) + '------name'+'</a>';
         },label:'NAME', attributes:{style:'color:red', class:'underline'}}
     ]}})
     view.render().$el.appendTo('#container');
 
-    view.on('cellClick:test',console.log);
+    view.on('rowClick',function(tr,model){
+        console.log(arguments);
+        view.renderDetailView(tr,model);
+    });
+    view.on('anchorClick:name',console.log);
 
     coll.on('all',console.log);
 

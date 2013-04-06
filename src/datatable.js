@@ -114,6 +114,7 @@ var RowView = BaseView.extend({
         'change':'render'
     },
     tagName: 'tr',
+    className:'row',
     render: function () {
         var _this = this;
         this.$el.empty();
@@ -121,6 +122,29 @@ var RowView = BaseView.extend({
             _this.$el.append(new CellView({model: _this.model,column:column}).render().el);
         });
 
+        return this;
+    }
+});
+
+var RowDetailView = BaseView.extend({
+    tagName:'tr',
+    initialize: function (options) {
+        this.columns = options.columns;
+        //this.model.view = this;
+    },
+    setModel:function(model){
+        this.model = model;
+        this.render();
+    },
+    render:function(){
+        if(this.model){
+            var td = $('<td></td>');
+            td.attr({
+                colspan:this.columns.length
+            });
+            td.html(JSON.stringify(this.model.toJSON()));
+            this.$el.append(td);
+        }
         return this;
     }
 });
@@ -146,8 +170,9 @@ var TableView = BaseView.extend({
     },
     events:{
         'click td':'tdClickHandler',
-        'mouseenter tr':'trHoverOnHandler',
-        'mouseleave tr':'trHoverOffHandler'
+        'click td a':'tdAnchorClickHandler',
+        'mouseenter tr.row':'trHoverOnHandler',
+        'mouseleave tr.row':'trHoverOffHandler'
     },
     initialize: function (options) {
         var config = options.config;
@@ -165,16 +190,38 @@ var TableView = BaseView.extend({
 
         this.renderHeaderView();
 
-
         this.collection.each(function (model) {
             _this.addRow.call(_this, model);
         });
+
         return this;
     },
     renderHeaderView:function(){
         this.$el.append(new HeaderRowView({
             columns: this.columns
         }).render().el);
+    },
+    renderDetailView:function(sourceRow,model){
+        console.log(arguments);
+
+        if(this.detailView){
+            this.detailView.remove();
+        }
+        if(this.expandedModelId === model.id){
+            delete this.expandedModelId;
+            return;
+        }
+
+        var detailView = new RowDetailView({
+            columns: this.columns,
+            model:model
+        });
+
+        detailView.render().$el.insertAfter(sourceRow);
+
+        this.detailView = detailView;
+        this.expandedModelId = model.id;
+
     },
     addRowHandler:function(event, model){
         this.addRow(model);
@@ -198,11 +245,28 @@ var TableView = BaseView.extend({
         this.render();
     },
     tdClickHandler:function(e){
+        e.preventDefault();
+        e.stopPropagation();
         var target = $(e.currentTarget);
         var model = target.data('__cellModel__');
         var column = target.data('__columnConfig__');
-        this.trigger('cellClick:'+column.key, target, model);
-        this.trigger('cellClick', target, column.key, model);
+        var eventName ='cellClick';
+        this.trigger(eventName+':'+column.key, target, model);
+        this.trigger(eventName+'', target, column.key, model);
+
+        eventName = 'rowClick';
+        this.trigger(eventName, target.closest('tr'),model);
+    },
+    tdAnchorClickHandler:function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var target = $(e.currentTarget);
+        var td = target.closest('td');
+        var model = td.data('__cellModel__');
+        var column = td.data('__columnConfig__');
+        var eventName ='anchorClick';
+        this.trigger(eventName+':'+column.key, target, model);
+        this.trigger(eventName+'', target, column.key, model);
     },
     trHoverOnHandler:function(e){
         var target = $(e.currentTarget);
