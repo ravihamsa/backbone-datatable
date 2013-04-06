@@ -186,6 +186,7 @@ var TableView = BaseView.extend({
         var target = $(e.currentTarget);
         var model = target.data('__cellModel__');
         var column = target.data('__columnConfig__');
+        this.trigger('cellClick:'+column.key, target, model);
         this.trigger('cellClick', target, column.key, model);
     }
 });
