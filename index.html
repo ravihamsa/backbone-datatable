@@ -17,6 +17,10 @@
             padding: 5px;
 
         }
+
+        .underline {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -35,7 +39,7 @@
         {key: 'test'},
         {key: 'name', formatter: function (key, model) {
             return model.get(key) + '------name'
-        },label:'NAME'}
+        },label:'NAME', attributes:{style:'color:red', class:'underline'}}
     ]}})
     view.render().$el.appendTo('#container');
 

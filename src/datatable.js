@@ -83,6 +83,10 @@ var CellView = BaseView.extend({
         this.column = column;
         this.key = column.key;
         this.formatter = column.formatter || defaultFormatter;
+        if(column.attributes){
+            this.$el.attr(column.attributes);
+        }
+
     },
     render: function () {
         this.$el.html(this.formatter.call(this, this.key, this.model));
