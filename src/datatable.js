@@ -67,7 +67,9 @@ var BaseModel = Backbone.Model.extend({
 });
 
 var BaseCollection = Backbone.Collection.extend({
-
+    comparator:function(item){
+        return item.get('name');
+    }
 });
 
 
@@ -106,6 +108,7 @@ var HeaderCellView = CellView.extend({
 var RowView = BaseView.extend({
     initialize: function (options) {
         this.columns = options.columns;
+        //this.model.view = this;
     },
     dataEvents:{
         'change':'render'
@@ -138,10 +141,13 @@ var TableView = BaseView.extend({
     tagName:'table',
     dataEvents:{
         'add':'addRowHandler',
-        'remove':'removeRowHandler'
+        'remove':'removeRowHandler',
+        'sort':'sortHandler'
     },
     events:{
-        'click td':'tdClickHandler'
+        'click td':'tdClickHandler',
+        'mouseenter tr':'trHoverOnHandler',
+        'mouseleave tr':'trHoverOffHandler'
     },
     initialize: function (options) {
         var config = options.config;
@@ -174,13 +180,22 @@ var TableView = BaseView.extend({
         this.addRow(model);
     },
     addRow:function(model){
-        this.$el.append(new RowView({
+        //var index = model.collection.indexOf(model);
+        //var lastIndex = this.$el.children().length;
+        var view = new RowView({
             model: model,
             columns: this.columns
-        }).render().el);
+        });
+
+        this.$el.append(view.render().el);
+        //this.$el.append().render().el);
     },
     removeRowHandler:function(){
         console.log('remove row', arguments);
+    },
+    sortHandler:function(){
+        //TODO:should implement index base insertion upon insert instead of re-render
+        this.render();
     },
     tdClickHandler:function(e){
         var target = $(e.currentTarget);
@@ -188,6 +203,14 @@ var TableView = BaseView.extend({
         var column = target.data('__columnConfig__');
         this.trigger('cellClick:'+column.key, target, model);
         this.trigger('cellClick', target, column.key, model);
+    },
+    trHoverOnHandler:function(e){
+        var target = $(e.currentTarget);
+        target.addClass('hover');
+    },
+    trHoverOffHandler:function(e){
+        var target = $(e.currentTarget);
+        target.removeClass('hover');
     }
 });
 

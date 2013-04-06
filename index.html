@@ -22,6 +22,10 @@
         .underline {
             text-decoration: underline;
         }
+
+        .hover {
+            background-color: azure;
+        }
     </style>
 </head>
 <body>
@@ -46,7 +50,13 @@
 
     view.on('cellClick:test',console.log);
 
+    coll.on('all',console.log);
+
     coll.add({name:'five', id:5});
+    coll.add({name:'six', id:6});
+    coll.add({name:'seven', id:7});
+    coll.add({name:'eight', id:8});
+    coll.add({name:'nine', id:9});
 
 
 
