@@ -37,12 +37,7 @@
 
 
 <script type="text/javascript">
-    var coll = new RowCollection([
-        {name: 'one', id: 1, test:'test'},
-        {name: 'two', id: 2, test:'test'},
-        {name: 'three', id: 3, test:'test'},
-        {name: 'four', id: 4, test:'test'}
-    ], {sortKey:'name'})
+    var coll = new RowCollection([], {sortKey:'name',filters:[{id:'func1',func:function(model){return model.id < 30}},{id:'func2',func:function(model){return model.id < 25}}]})
     var view = new TableView({collection: coll, config: {columns: [
         {key: 'id'},
         {key: 'test'},
@@ -59,14 +54,13 @@
 
     //view.on('all',console.log);
 
-    coll.add({name:'five', id:5});
-    coll.add({name:'six', id:6});
-    coll.add({name:'seven', id:7});
-    coll.add({name:'eight', id:8});
-    coll.add({name:'nine', id:9});
-    coll.add({name:'ten', id:10});
 
+    var arr = [];
+    for(var i=1; i<100;i++){
+       arr.push({id:i, name:'name_'+i, test:1000-i});
+    }
 
+    coll.reset(arr);
 
 </script>
 

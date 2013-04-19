@@ -6,6 +6,16 @@
  * To change this template use File | Settings | File Templates.
  */
 
+
+var defaultFormatter = function (key, model) {
+    return model.get(key);
+};
+
+var beautifyKey = function(str){
+    str = str.split('_').join(' ');
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+
 var BaseView = Backbone.View.extend({
     constructor: function (options) {
         Backbone.View.call(this, options);
@@ -70,20 +80,42 @@ var BaseCollection = Backbone.Collection.extend({
 
 });
 
-
 var RowCollection = BaseCollection.extend({
     initialize:function(data, options){
         this.sortKey = options.sortKey || _.keys(data[0])[0];
         this.sortOrder = options.sortOrder === 'asc' ? 'desc' : 'asc';
+        if(options.filters){
+           this.filterCollection = new Backbone.Collection(options.filters);
+        }
     },
     comparator: function (itemA, itemB) {
-        var valueA = itemA.get(this.sortKey) || "0";
-        var valueB = itemB.get(this.sortKey) || "0";
-        if(this.sortOrder === 'asc'){
-            return valueA > valueB;
-        }else{
-            return valueA < valueB;
+        var valueA = itemA.get(this.sortKey) || 1;
+        var valueB = itemB.get(this.sortKey) || 1;
+
+        if(valueA===valueB){
+            return 0;
         }
+
+        var toReturn = this.sortOrder === 'asc'? 1 : -1;
+
+        if(valueA > valueB){
+             return toReturn * 1;
+        }else{
+            return toReturn * -1;
+        }
+    },
+    filterModel:function(model){
+        if(!this.filterCollection){
+            return true;
+        }
+
+        var filters = this.filterCollection;
+
+        var found = filters.filter(function(filterModel){
+            return filterModel.get('func').call(null, model);
+        });
+
+        return found.length === filters.length;
 
     },
     setSortKey:function(key){
@@ -93,19 +125,32 @@ var RowCollection = BaseCollection.extend({
             this.sortKey = key;
             this.sortOrder = 'asc';
         }
+        console.log(this.sortKey, this.sortOrder);
         this.sort();
     }
 });
 
-var defaultFormatter = function (key, model) {
-    return model.get(key);
-};
+var ColumnModel = BaseModel.extend({
+    defaults:{
+        key:'name',
+        formatter:defaultFormatter
+    },
+    getLabel:function(){
+        return this.get('label') || beautifyKey(this.get('key'));
+    }
+});
+
+var ColumnCollection = BaseCollection.extend({
+    model:ColumnModel
+});
+
+
 
 
 var CellView = BaseView.extend({
     tagName: 'td',
     initialize: function (options) {
-        var column = options.column;
+        var column = options.column.toJSON();
         this.column = column;
         this.key = column.key;
         this.formatter = column.formatter || defaultFormatter;
@@ -132,7 +177,6 @@ var HeaderCellView = CellView.extend({
 var RowView = BaseView.extend({
     initialize: function (options) {
         this.columns = options.columns;
-        //this.model.view = this;
     },
     dataEvents: {
         'change': 'render'
@@ -142,7 +186,7 @@ var RowView = BaseView.extend({
     render: function () {
         var _this = this;
         this.$el.empty();
-        _.each(this.columns, function (column) {
+        this.columns.each(function (column) {
             _this.$el.append(new CellView({model: _this.model, column: column}).render().el);
         });
 
@@ -176,10 +220,9 @@ var RowDetailView = BaseView.extend({
 var HeaderRowView = RowView.extend({
     render: function () {
         var _this = this;
-        _.each(this.columns, function (column) {
+        this.columns.each(function (column) {
             _this.$el.append(new HeaderCellView({column: column}).render().el);
         });
-
         return this;
     }
 });
@@ -190,7 +233,8 @@ var TableView = BaseView.extend({
     dataEvents: {
         'add': 'addRowHandler',
         'remove': 'removeRowHandler',
-        'sort': 'sortHandler'
+        'sort': 'sortHandler',
+        'reset':'render'
     },
     events: {
         'click td': 'tdClickHandler',
@@ -201,7 +245,7 @@ var TableView = BaseView.extend({
     },
     initialize: function (options) {
         var config = options.config;
-        this.columns = config.columns;
+        this.columns = new ColumnCollection(config.columns);
 
         this.$el.attr({
             cellpadding: 0,
@@ -252,12 +296,18 @@ var TableView = BaseView.extend({
     addRow: function (model) {
         //var index = model.collection.indexOf(model);
         //var lastIndex = this.$el.children().length;
-        var view = new RowView({
-            model: model,
-            columns: this.columns
-        });
 
-        this.$el.append(view.render().el);
+        if(this.collection.filterModel(model)){
+            var view = new RowView({
+                model: model,
+                columns: this.columns
+            });
+
+            this.$el.append(view.render().el);
+        }
+
+
+
         //this.$el.append().render().el);
     },
     removeRowHandler: function () {
