@@ -37,7 +37,7 @@
 
 
 <script type="text/javascript">
-    var coll = new RowCollection([], {sortKey:'name',filters:[{id:'func1',func:function(model){return model.id < 30}},{id:'func2',func:function(model){return model.id < 25}}]})
+    var coll = new RowCollection([], {sortKey:'name',filters:[{id:'func1',func:function(model){return model.id < 50}},{id:'func2',func:function(model){return model.id < 45}}]})
     var view = new TableView({collection: coll, config: {columns: [
         {key: 'id'},
         {key: 'test'},

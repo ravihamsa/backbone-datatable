@@ -228,8 +228,20 @@ var HeaderRowView = RowView.extend({
 });
 
 
+var PaginationView = BaseView.extend({
+    tagName:'ul',
+    initialize:function(){
+        this.perPage = 10;
+    },
+    render:function(){
+        var coll = this.collection;
+        var pageCount =  Math.ceil(coll.length/this.perPage);
+    }
+});
+
+
 var TableView = BaseView.extend({
-    tagName: 'table',
+    tagName: 'div',
     dataEvents: {
         'add': 'addRowHandler',
         'remove': 'removeRowHandler',
@@ -247,26 +259,42 @@ var TableView = BaseView.extend({
         var config = options.config;
         this.columns = new ColumnCollection(config.columns);
 
-        this.$el.attr({
-            cellpadding: 0,
-            cellspacing: 0,
-            width: '100%'
-        });
+
     },
     render: function () {
         var _this = this;
         _this.$el.empty();
 
+        this.renderContainer();
+
         this.renderHeaderView();
+
+
 
         this.collection.each(function (model) {
             _this.addRow.call(_this, model);
         });
 
+
+        this.renderPagination();
+
         return this;
     },
+    renderContainer:function(){
+        this.$el.append('<div class="header"></div> <div class="table"><table></table></div> <div class="footer"></div>');
+        this.$tableEl = this.$('table');
+        this.$tableEl.attr({
+            cellpadding: 0,
+            cellspacing: 0,
+            width: '100%'
+        });
+
+        this.$headerEl = this.$('.header');
+        this.$footerEl = this.$('.footer');
+    },
     renderHeaderView: function () {
-        this.$el.append(new HeaderRowView({
+
+        this.$tableEl.append(new HeaderRowView({
             columns: this.columns
         }).render().el);
     },
@@ -290,6 +318,9 @@ var TableView = BaseView.extend({
         this.expandedModelId = model.id;
 
     },
+    renderPagination:function(){
+
+    },
     addRowHandler: function (event, model) {
         this.addRow(model);
     },
@@ -303,7 +334,7 @@ var TableView = BaseView.extend({
                 columns: this.columns
             });
 
-            this.$el.append(view.render().el);
+            this.$tableEl.append(view.render().el);
         }
 
 
