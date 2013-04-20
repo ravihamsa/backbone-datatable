@@ -7,27 +7,27 @@
     <script type="text/javascript" src="src/datatable.js" data-main="app/main"></script>
     <style type="text/css">
 
-        table
+        .table-view table
         {
             border-collapse:collapse;
             text-align: left;
         }
 
-        td,th {
+        .table-view td,.table-view th {
             border: 1px solid #ccc;
             padding: 5px;
 
         }
 
-        .underline {
+        .table-view .underline {
             text-decoration: underline;
         }
 
-        .hover {
+        .table-view .hover {
             background-color: azure;
         }
 
-        th {
+        .table-view th {
             background-color: cornsilk;
         }
     </style>
@@ -37,7 +37,7 @@
 
 
 <script type="text/javascript">
-    var coll = new RowCollection([], {sortKey:'name',filters:[{id:'func1',func:function(model){return model.id < 50}},{id:'func2',func:function(model){return model.id < 45}}]})
+    var coll = new RowCollection([], {sortKey:'name',filters:[{id:'func1',func:function(model){return model.id < 50}},{id:'func2',func:function(model){return model.id < 45}}], pagination:{perPage:10, curPage:4}})
     var view = new TableView({collection: coll, config: {columns: [
         {key: 'id'},
         {key: 'test'},
