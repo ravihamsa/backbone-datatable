@@ -277,6 +277,7 @@
 
     var PaginationView = BaseView.extend({
         tagName: 'ul',
+        className:'pagination',
         initialize: function (optoins) {
             this.rowCollection = optoins.rowCollection;
             console.log(arguments);
