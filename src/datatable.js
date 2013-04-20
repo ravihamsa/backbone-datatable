@@ -298,25 +298,9 @@
 
         },
         actionHandler:function(action){
-            switch(action){
-                case 'firstPage':
-                    this.model.gotoFirstPage();
-                    break;
-                case 'lastPage':
-                    this.model.gotoLastPage();
-                    break;
-                case 'nextPage':
-                    this.model.gotoNextPage();
-                    break;
-                case 'prevPage':
-                    this.model.gotoPrevPage();
-                    break;
-                default:
-                    var pageNo = parseInt(action,10) || 0;
-                    this.model.setPageNumber(pageNo);
-                    this.rowCollection.trigger('reset');
-                    break;
-            }
+            var pageNo = parseInt(action,10) || 0;
+            this.model.setPageNumber(pageNo);
+            this.rowCollection.trigger('reset');
         }
     });
 
