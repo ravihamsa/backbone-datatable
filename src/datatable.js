@@ -199,9 +199,6 @@
             this.column = column;
             this.key = column.key;
             this.formatter = column.formatter || defaultFormatter;
-            if (column.attributes) {
-                this.$el.attr(column.attributes);
-            }
             this.$el.data('__cellModel__', this.model);
             this.$el.data('__columnConfig__', column);
         },
@@ -286,14 +283,24 @@
             var coll = this.rowCollection;
             var filteredLength =  coll.filter(coll.filterModel, coll).length;
             var perPage = this.model.get('perPage');
+            var curPage = this.model.get('curPage');
             var pageCount = Math.ceil(filteredLength/ perPage);
             if (_.isNaN(pageCount)) {
                 return this;
             }
+
+            var ul = $('<ul></ul>');
+
             for (var i = 0; i < pageCount; i++) {
-                this.$el.append('<li> <a href="'+i+'page" class="action">' + (i+1) + '</a></li>');
+                var li = $('<li> <a href="'+i+'page" class="action">' + (i+1) + '</a></li>');
+                if(i === curPage){
+                    li.addClass('selected');
+                }
+
+                ul.append(li);
             }
 
+            this.$el.append(ul.children());
             return this;
 
         },

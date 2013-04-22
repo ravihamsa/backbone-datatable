@@ -7,6 +7,11 @@
     <script type="text/javascript" src="src/datatable.js" data-main="app/main"></script>
     <style type="text/css">
 
+        .table-view ul, .table-view li {
+            margin:0;
+            padding: 0;
+        }
+
         .table-view table
         {
             border-collapse:collapse;
@@ -31,6 +36,10 @@
             background-color: cornsilk;
         }
 
+        .table-view .pagination {
+            padding:10px;
+        }
+
         .table-view .pagination li {
             display: inline-block;
             margin-right: 10px;
@@ -41,6 +50,11 @@
             display: block;
             padding:5px 10px;
             border:1px solid #ccc;
+        }
+
+        .table-view li.selected a {
+            background-color: cornflowerblue;
+            color:black;
         }
     </style>
 </head>
@@ -55,13 +69,15 @@
         {key: 'test'},
         {key: 'name', formatter: function (key, model) {
             return '<a href="">'+model.get(key) + '------name'+'</a>';
-        },label:'NAME', attributes:{style:'color:red', class:'underline'}}
+        },label:'NAME'}
     ]}})
     view.render().$el.appendTo('#container');
 
+    /*
     view.on('rowClick',function(tr,model){
         view.renderDetailView(tr,model);
     });
+    */
     //view.on('anchorClick:name',console.log);
 
     //view.on('all',console.log);
