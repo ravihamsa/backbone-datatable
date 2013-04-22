@@ -203,7 +203,20 @@
             this.$el.data('__columnConfig__', column);
         },
         render: function () {
-            this.$el.html(this.formatter.call(this, this.key, this.model));
+            var div = $('<div></div>');
+            div.html(this.formatter.call(this, this.key, this.model));
+            div.css({
+                width:this.column.width || 'auto',
+                'text-align':this.column.align || 'left'
+            });
+
+            if(!this.column.width){
+                this.$el.css({
+                    width:'100%'
+                });
+            }
+
+            this.$el.html(div);
             return this;
         }
     });
@@ -212,7 +225,20 @@
         tagName: 'th',
         className: 'header-cell',
         render: function () {
-            this.$el.html(this.column.label || this.column.key);
+            var div = $('<div></div>');
+            div.html(this.column.label || this.column.key);
+            div.css({
+                width:this.column.width || 'auto',
+                'text-align':this.column.align || 'left'
+            });
+
+            if(!this.column.width){
+                this.$el.css({
+                    width:'100%'
+                });
+            }
+
+            this.$el.html(div);
             return this;
         }
     });
