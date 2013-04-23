@@ -65,7 +65,7 @@
 <script type="text/javascript">
     var coll = new RowCollection([], {sortKey:'name',filters:[{id:'func1',func:function(model){return model.id < 50}},{id:'func2',func:function(model){return model.id < 45}}], pagination:{perPage:10, curPage:4}})
     var view = new TableView({collection: coll, config: {columns: [
-        {key: 'id', width:100},
+        {key: 'id', width:100, align:'right'},
         {key: 'test', width:200},
         {key: 'name', formatter: function (key, model) {
             return '<a href="">'+model.get(key) + '------name'+'</a>';

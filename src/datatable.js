@@ -205,16 +205,12 @@
         render: function () {
             var div = $('<div></div>');
             div.html(this.formatter.call(this, this.key, this.model));
-            div.css({
+            this.$el.css({
                 width:this.column.width || 'auto',
                 'text-align':this.column.align || 'left'
             });
 
-            if(!this.column.width){
-                this.$el.css({
-                    width:'100%'
-                });
-            }
+
 
             this.$el.html(div);
             return this;
@@ -227,16 +223,12 @@
         render: function () {
             var div = $('<div></div>');
             div.html(this.column.label || this.column.key);
-            div.css({
+            this.$el.css({
                 width:this.column.width || 'auto',
                 'text-align':this.column.align || 'left'
             });
 
-            if(!this.column.width){
-                this.$el.css({
-                    width:'100%'
-                });
-            }
+
 
             this.$el.html(div);
             return this;
